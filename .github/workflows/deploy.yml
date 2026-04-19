@@ -1,0 +1,17 @@
+name: Deploy with Secrets
+on:
+  push:
+    branches: [ main ] # あなたがコードをアップした時に動きます
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: URLを金庫の中身と入れ替える
+        # コードの中の「あだ名」を「本物のURL」に書き換える命令です
+        run: sed -i "s|REPLACE_ME_WITH_URL|${{ secrets.SLACK_GAS_URL }}|g" index.html
+      - name: サイトとして公開する
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
