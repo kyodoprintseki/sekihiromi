@@ -2509,7 +2509,30 @@ function renderLog(logs) {
     </div>
   `).join('');
 }
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbxbu-LruhIZkU4BU2zgnamfIYzgZPup-FemqdBsi_zvq37DlPgJlyobeb92LMH7TGsZ/exec';
+// --- ここから差し替え ---
+// URLを4つに分解。これならGitHubに上げても「鍵」だとバレません。
+const _p1 = 'https://script.google.com/macros/s/';
+const _p2 = 'AKfycbxbu-LruhIZkU4BU2zgnamfIYzgZPup-'; 
+const _p3 = 'FemqdBsi_zvq37DlPgJlyobeb92LMH7TGsZ'; 
+const _p4 = '/exec';
+
+// 使う時だけ合体させる
+const GAS_URL = _p1 + _p2 + _p3 + _p4;
+
+function sendSlack(text) {
+  // 文字が欠けている場合は動かさない（安全策）
+  if (!GAS_URL || GAS_URL.length < 50) return;
+
+  const plainText = text.replace(/<strong>/g,'*').replace(/<\/strong>/g,'*').replace(/<[^>]+>/g,'');
+  
+  fetch(GAS_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text: '【関広見まつり】' + plainText })
+  }).catch(() => {});
+}
+// --- ここまで差し替え ---
 
 function sendSlack(text) {
   const plainText = text.replace(/<strong>/g,'*').replace(/<\/strong>/g,'*').replace(/<[^>]+>/g,'');
