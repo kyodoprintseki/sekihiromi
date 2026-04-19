@@ -1,14 +1,20 @@
 name: Deploy with Secrets
 on:
   push:
-    branches: [ main ] # あなたがコードをアップした時に動きます
+    branches: [ main ]
+# ↓ここを追加（権限不足で赤バツになるのを防ぎます）
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: URLを金庫の中身と入れ替える
-        # コードの中の「あだ名」を「本物のURL」に書き換える命令です
+        # あなたのメインファイル名が「index.html」であることを確認してください
         run: sed -i "s|REPLACE_ME_WITH_URL|${{ secrets.SLACK_GAS_URL }}|g" index.html
       - name: サイトとして公開する
         uses: peaceiris/actions-gh-pages@v3
